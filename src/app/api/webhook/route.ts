@@ -1,7 +1,13 @@
 // app/api/webhook/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import firebase_app from "@/firebase/config";
-import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  getDoc,
+  serverTimestamp,
+} from "firebase/firestore";
 
 // Function to append text to a field in a Firestore document
 async function appendText(sessionId: string, newText: string) {
@@ -12,11 +18,14 @@ async function appendText(sessionId: string, newText: string) {
   const docSnap = await getDoc(docRef);
 
   if (docSnap.exists()) {
-    const currentText = docSnap.data().text || "";
-    const updatedText = currentText + newText;
-    result = await setDoc(docRef, { text: updatedText }, { merge: true });
+    let text = docSnap.data().text || "";
+    text += ` ${newText}`;
+    result = await setDoc(docRef, { text }, { merge: true });
   } else {
-    result = await setDoc(docRef, { text: newText });
+    result = await setDoc(docRef, {
+      text: newText,
+      createdAt: serverTimestamp(),
+    });
   }
 
   return { result };
