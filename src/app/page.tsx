@@ -4,6 +4,19 @@ import { useEffect, useState } from "react";
 import { getFirestore, doc, onSnapshot } from "firebase/firestore";
 import firebase_app from "@/firebase/config";
 
+// Define the Message interface
+interface Message {
+  speaker: string;
+  text: string;
+}
+
+// Format the transcript string
+const formatTranscriptString = (messages: Message[]): string => {
+  return messages
+    .map((message) => `${message.speaker}: ${message.text}`)
+    .join("\n");
+};
+
 const Home = () => {
   const [callSessionId, setCallSessionId] = useState(null);
   const [transcription, setTranscription] = useState(null);
@@ -34,8 +47,9 @@ const Home = () => {
       (doc) => {
         if (doc.exists()) {
           const data = doc.data();
-          setTranscription(data.text);
-          // TODO: call API for LLM processing here
+          const messageString = formatTranscriptString(data.messages);
+          setTranscription(messageString);
+          // TODO: call API for LLM processing here with messageString
         } else {
           console.log("No such document!");
         }

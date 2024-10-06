@@ -9,7 +9,6 @@ import {
   limit,
   getDocs,
 } from "firebase/firestore";
-import { text } from "stream/consumers";
 
 export async function GET(req: NextRequest) {
   try {
