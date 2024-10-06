@@ -18,8 +18,8 @@ const formatTranscriptString = (messages: Message[]): string => {
 };
 
 const Home = () => {
-  const [callSessionId, setCallSessionId] = useState(null);
-  const [transcription, setTranscription] = useState(null);
+  const [callSessionId, setCallSessionId] = useState<string | null>(null);
+  const [transcription, setTranscription] = useState<string>("");
 
   // Get the latest call session ID from the API
   const handleClick = () => {
