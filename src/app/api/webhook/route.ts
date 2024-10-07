@@ -113,12 +113,19 @@ export async function POST(req: NextRequest) {
     // Sort segments by end date (earliest to latest)
     segments.sort((a, b) => a.end - b.end);
 
-    // Map segments to array associated with speaker
-    const newSegments = segments.map((segment) => ({
-      speaker: segment.speaker,
-      text: segment.text,
-    }));
-    const { result } = await appendMessages(sessionId, newSegments);
+    // Merge consecutive segments with the same speaker
+    const mergedSegments: Array<{ speaker: string; text: string }> = [];
+    segments.forEach((segment) => {
+      const lastSegment = mergedSegments[mergedSegments.length - 1];
+      if (lastSegment && lastSegment.speaker === segment.speaker) {
+        lastSegment.text += " " + segment.text;
+      } else {
+        mergedSegments.push({ speaker: segment.speaker, text: segment.text });
+      }
+    });
+
+    // Append messages to Firestore document
+    const { result } = await appendMessages(sessionId, mergedSegments);
 
     console.info("Segments stored in Firestore successfully:", result);
 
