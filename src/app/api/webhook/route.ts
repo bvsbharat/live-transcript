@@ -38,7 +38,7 @@ async function appendMessages(
   let result = null;
   const db = getFirestore(firebase_app);
 
-  const docRef = doc(db, "transcriptions", sessionId);
+  const docRef = doc(db, "transcriptions", "TRANSCRIPT");
   const docSnap = await getDoc(docRef);
 
   if (docSnap.exists()) {
